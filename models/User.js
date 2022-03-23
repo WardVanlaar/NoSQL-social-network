@@ -24,7 +24,7 @@ const UserSchema = new Schema(
     friends: [
         {
           type: Schema.Types.ObjectId,
-          ref: 'Friends'
+          ref: 'User'
         }
       ]
   },
@@ -40,7 +40,8 @@ const UserSchema = new Schema(
 UserSchema.plugin(uniqueValidator);
 
 UserSchema.virtual('friendCount').get(function() {
-  return this.friends.reduce((total, friend) => total + friend.replies.length + 1, 0);
+  return this.friends.length
+  // return this.friends.reduce((total, friend) => total + friend.length + 1, 0);
 });
 
 const User = model('User', UserSchema);
