@@ -19,6 +19,7 @@
   "homepage": "https://github.com/WardVanlaar/NoSQL-social-network#readme",
   "dependencies": {
     "express": "^4.17.3",
-    "mongoose": "^6.2.8"
+    "mongoose": "^6.2.8",
+    "mongoose-unique-validator": "^3.0.0"
   }
 }
