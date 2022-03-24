@@ -6,7 +6,7 @@ const thoughtController = {
     Thought.find({})
       .select("-__v")
       .sort({ _id: -1 })
-      .then((dbUserData) => res.json(dbUserData))
+      .then((dbThoughtData) => res.json(dbThoughtData))
       .catch((err) => {
         console.log(err);
         res.status(400).json(err);
@@ -17,12 +17,12 @@ const thoughtController = {
   getThoughtById(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
       .select("-__v")
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: "No thought found with this id!" });
           return;
         }
-        res.json(dbUserData);
+        res.json(dbThoughtData);
       })
       .catch((err) => {
         console.log(err);
@@ -40,12 +40,12 @@ const thoughtController = {
           { new: true }
         );
       })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: "No user found with this id!" });
           return;
         }
-        res.json(dbPizzaData);
+        res.json(dbThoughtData);
       })
       .catch((err) => res.json(err));
   },
@@ -63,12 +63,12 @@ const thoughtController = {
           { new: true }
         );
       })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: "No user found with this id!" });
           return;
         }
-        res.json(dbPizzaData);
+        res.json(dbThoughtData);
       })
       .catch((err) => res.json(err));
   },
@@ -83,12 +83,12 @@ const thoughtController = {
         runValidators: true,
       }
     )
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: "No user found with this id!" });
           return;
         }
-        res.json(dbPizzaData);
+        res.json(dbThoughtData);
       })
       .catch((err) => res.status(400).json(err));
   },
@@ -100,12 +100,12 @@ const thoughtController = {
       { $push: { reactions: req.body } },
       { new: true, runValidators: false }
     )
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
           res.status(404).json({ message: "No user found with this id!" });
           return;
         }
-        res.json(dbUserData);
+        res.json(dbThoughtData);
       })
       .catch((err) => res.json(err));
   },
@@ -114,13 +114,22 @@ const thoughtController = {
   removeReaction(req, res) {
     console.log(req.body);
     console.log(req.params);
+    console.log(req.params.reactionId);
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $pull: { reactions: req.params.reactionId } },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
       { new: true }
     )
-      .then((dbUserData) => res.json(dbUserData))
-      .catch((err) => res.json(err));
+      .then((dbThoughtData) => {
+        if(!dbThoughtData) {
+          return res.status(404).json({message: 'No thought for this id'});
+        }
+        res.json(dbThoughtData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   },
 };
 
