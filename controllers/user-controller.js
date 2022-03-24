@@ -1,5 +1,5 @@
 const req = require("express/lib/request");
-const { User } = require("../models");
+const { User, Thought } = require("../models");
 
 const userController = {
   // get all Users
@@ -10,8 +10,8 @@ const userController = {
         select: "-__v",
       })
       .populate({
-        path: 'friends',
-        select: '-__v'
+        path: "friends",
+        select: "-__v",
       })
       .select("-__v")
       .sort({ _id: -1 })
@@ -23,15 +23,15 @@ const userController = {
   },
 
   // get one user by id
-  getUserById(req , res) {
+  getUserById(req, res) {
     User.findOne({ _id: req.params.userId })
       .populate({
         path: "thoughts",
         select: "-__v",
       })
       .populate({
-        path: 'friends',
-        select: '-__v'
+        path: "friends",
+        select: "-__v",
       })
       .select("-__v")
       .then((dbUserData) => {
@@ -56,10 +56,14 @@ const userController = {
 
   // update user by id
   updateUser(req, res) {
-    User.findOneAndUpdate({ _id: req.params.userId }, {$set: req.body}, {
-      new: true,
-      runValidators: true,
-    })
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $set: req.body },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
       .then((dbUserData) => {
         if (!dbUserData) {
           res.status(404).json({ message: "No user found with this id!" });
@@ -70,7 +74,7 @@ const userController = {
       .catch((err) => res.status(400).json(err));
   },
 
-  // delete user
+  // delete user; code adapted from: https://github.com/chris6661/18-NoSQL-Social-Network-API/blob/main/controllers/user-controller.js
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
       .then((dbUserData) => {
@@ -78,15 +82,51 @@ const userController = {
           res.status(404).json({ message: "No user found with this id!" });
           return;
         }
-        res.json(dbUserData);
+        return dbUserData;
       })
-      .catch((err) => res.status(400).json(err));
+      .then((dbUserData) => {
+        User.updateMany(
+          {
+            _id: {
+              $in: dbUserData.friends,
+            },
+          },
+          {
+            $pull: {
+              friends: params.userId,
+            },
+          }
+        )
+          .then(() => {
+            //deletes user's thought associated with id
+            Thought.deleteMany({
+              username: dbUserData.username,
+            })
+              .then(() => {
+                res.json({
+                  message: "User deleted successfully",
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(400).json(err);
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(400).json(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json(err);
+      });
   },
 
   // add a friend
   addFriend(req, res) {
-    console.log(req.body)
-    console.log(req.params)
+    console.log(req.body);
+    console.log(req.params);
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $push: { friends: req.params.friendId } },
@@ -104,16 +144,16 @@ const userController = {
 
   // remove friend
   deleteFriend(req, res) {
-    console.log(req.params)
+    console.log(req.params);
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $pull: { friends: req.params.friendId } },
       { new: true }
     )
-    .populate({
-      path: 'friends',
-      select: '-__v'
-    })
+      .populate({
+        path: "friends",
+        select: "-__v",
+      })
       .then((dbUserData) => res.json(dbUserData))
       .catch((err) => res.json(err));
   },
