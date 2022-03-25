@@ -14,7 +14,7 @@ const ReactionSchema = new Schema(
         required: true,
         maxLength: 280,
       },
-      writtenBy: {
+      userName: {
         type: String,
         required: true
       },
@@ -27,7 +27,7 @@ const ReactionSchema = new Schema(
     {
       toJSON: {
         getters: true
-      }
+      }, id: false
     }
   );
 
@@ -44,7 +44,7 @@ const ThoughtSchema = new Schema(
       default: Date.now,
       get: (createdAtVal) => dateFormat(createdAtVal)
     },
-    writtenBy: {
+    userName: {
         type: String,
         required: true
       },
