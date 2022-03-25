@@ -9,10 +9,6 @@ const userController = {
         path: "thoughts",
         select: "-__v",
       })
-      .populate({
-        path: "friends",
-        select: "-__v",
-      })
       .select("-__v")
       .sort({ _id: -1 })
       .then((dbUserData) => res.json(dbUserData))
@@ -27,10 +23,6 @@ const userController = {
     User.findOne({ _id: req.params.userId })
       .populate({
         path: "thoughts",
-        select: "-__v",
-      })
-      .populate({
-        path: "friends",
         select: "-__v",
       })
       .select("-__v")
@@ -85,32 +77,14 @@ const userController = {
         return dbUserData;
       })
       .then((dbUserData) => {
-        User.updateMany(
-          {
-            _id: {
-              $in: dbUserData.friends,
-            },
-          },
-          {
-            $pull: {
-              friends: params.userId,
-            },
-          }
-        )
+        //deletes user's thought associated with id
+        Thought.deleteMany({
+          userName: dbUserData.userName,
+        })
           .then(() => {
-            //deletes user's thought associated with id
-            Thought.deleteMany({
-              username: dbUserData.username,
-            })
-              .then(() => {
-                res.json({
-                  message: "User deleted successfully",
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-                res.status(400).json(err);
-              });
+            res.json({
+              message: "User deleted successfully",
+            });
           })
           .catch((err) => {
             console.log(err);
