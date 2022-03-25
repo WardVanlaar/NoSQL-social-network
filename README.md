@@ -16,6 +16,7 @@ This App enables users to share thoughts and react to thoughts of other users.
 
 Programming languages used:
 
+* Javascript
 
 ## Installation
 Install MongoDB, clone this repo, run npm install, then type npm start in the terminal.
