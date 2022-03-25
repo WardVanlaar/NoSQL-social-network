@@ -22,7 +22,9 @@ Programming languages used:
 Install MongoDB, clone this repo, run npm install, then type npm start in the terminal.
 
 ## Usage
-This App can be used to support a social network of users who want to share thoughts with other users and provide reactions to these thoughts.
+This App can be used to support a social network of users who want to share thoughts with other users and provide reactions to these thoughts. Here is a video showing all the CRUD operations the App does: 
+
+https://www.loom.com/share/9090680adcba41758119aa8f96af2573?sharedAppSource=personal_library
 
 ## License
 This App is covered under the following license: MIT
