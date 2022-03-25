@@ -66,7 +66,7 @@ const userController = {
       .catch((err) => res.status(400).json(err));
   },
 
-  // delete user; code adapted from: https://github.com/chris6661/18-NoSQL-Social-Network-API/blob/main/controllers/user-controller.js
+  // delete user; code to remove thoughts associated with users adapted from: https://github.com/chris6661/18-NoSQL-Social-Network-API/blob/main/controllers/user-controller.js
   deleteUser(req, res) {
     User.findOneAndDelete({ _id: req.params.userId })
       .then((dbUserData) => {
@@ -77,7 +77,6 @@ const userController = {
         return dbUserData;
       })
       .then((dbUserData) => {
-        //deletes user's thought associated with id
         Thought.deleteMany({
           userName: dbUserData.userName,
         })
